@@ -6,9 +6,11 @@ import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.M
+import android.os.Build.VERSION_CODES.N
 import com.tasomaniac.openwith.BuildConfig
 import com.tasomaniac.openwith.extensions.isHttp
 import com.tasomaniac.openwith.rx.SchedulingStrategy
+import com.tasomaniac.openwith.util.Intents
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.disposables.Disposables
@@ -59,7 +61,9 @@ internal class IntentResolver @Inject constructor(
     }
 
     private fun doResolve(): IntentResolverResult {
-        val flag = if (SDK_INT >= M) PackageManager.MATCH_ALL else PackageManager.MATCH_DEFAULT_ONLY
+        val flag = Intents.PACKAGE_MANAGER_QUERY_FLAGS or
+            if (SDK_INT >= M) PackageManager.MATCH_ALL else 0
+
         val currentResolveList = ArrayList(packageManager.queryIntentActivities(sourceIntent, flag))
         currentResolveList.removeAll {
             it.activityInfo.packageName == BuildConfig.APPLICATION_ID
